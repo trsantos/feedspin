@@ -1,0 +1,23 @@
+[Unit]
+After=network.target postgresql.service
+Description=Puma
+
+# Requires=puma.socket
+
+[Service]
+Type=notify
+User=feedspin
+Group=feedspin
+WorkingDirectory=/home/feedspin/feedspin
+EnvironmentFile=/etc/environment
+
+Environment=MALLOC_ARENA_MAX=2
+
+ExecStart=/home/feedspin/.rbenv/shims/bundle exec puma
+
+Restart=always
+TimeoutStopSec=30
+WatchdogSec=10
+
+[Install]
+WantedBy=multi-user.target

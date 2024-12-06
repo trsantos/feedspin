@@ -1,50 +1,53 @@
 <ul id="feed-controls" class="menu vertical medium-horizontal" data-responsive-menu="drilldown medium-dropdown">
-    <% if @subscription %>
-	<% if @subscription.starred %>
-	    <li>
-		<%= link_to "Unstar",
-		subscription_path(@subscription, subscription: { starred: false }),
-		remote: true,
-		method: :patch %>
-	    </li>
-	<% else %>
-	    <li>
-		<%= link_to "Star",
-		subscription_path(@subscription, subscription: { starred: true }),
-		remote: true,
-		method: :patch,
-		title: "Starred feeds will be displayed first when updated. This is for your must-reads." %>
-	    </li>
-	<% end %>
-	<li>
-	    <%= link_to "Edit", edit_subscription_path(@subscription) %>
-	</li>
-	<li>
-	    <%= link_to "Unsubscribe",
-	    subscription_path(@subscription),
-	    remote: true,
-	    method: :delete %>
-	</li>
+  <% if @subscription %>
+    <% if @subscription.starred %>
+      <li>
+        <%= link_to "Unstar",
+                    subscription_path(@subscription, subscription: { starred: false }),
+                    remote: true,
+                    method: :patch %>
+      </li>
     <% else %>
-	<li>
-	    <%= link_to "Subscribe",
-	    subscriptions_path(feed_id: @feed.id),
-	    remote: true,
-	    method: :post %>
-	</li>
+      <li>
+        <%= link_to "Star",
+                    subscription_path(@subscription, subscription: { starred: true }),
+                    remote: true,
+                    method: :patch,
+                    title: "Starred feeds will be displayed first when updated. This is for your must-reads." %>
+      </li>
     <% end %>
-    <li class="show-for-medium">
-	<%= link_to 'Next feed', next_path(last_sub: @subscription), class: 'button', accesskey: 'n' %>
+
+    <li><%= link_to "Edit", edit_subscription_path(@subscription) %></li>
+    <li><%= link_to "Unsubscribe",
+                    subscription_path(@subscription),
+                    remote: true,
+                    method: :delete %>
     </li>
-    <li class="show-for-small-only">
-	<%= link_to current_user.name.split.first, '#' %>
-	<ul class="menu vertical">
-	    <% if current_user.subscriptions.any? %>
-		<li><%= link_to "Subscriptions", subscriptions_path %></li>
-	    <% end %>
-	    <li><%= link_to "Setup", current_user %></li>
-	    <li><%= link_to "Account", edit_user_path(current_user) %></li>
-	    <li><%= link_to "Log out", logout_path, method: "delete" %></li>
-	</ul>
+  <% else %>
+    <li>
+      <%= link_to "Subscribe",
+                  subscriptions_path(feed_id: @feed.id),
+                  remote: true,
+                  method: :post %>
     </li>
+  <% end %>
+
+  <li class="show-for-medium">
+    <%= link_to 'Next feed',
+                next_path(last_sub: @subscription),
+                class: 'button',
+                accesskey: 'n' %>
+  </li>
+  <li class="show-for-small-only">
+    <%= link_to current_user.name.split.first, '#' %>
+    <ul class="menu vertical">
+      <% if current_user.subscriptions.any? %>
+        <li><%= link_to "Subscriptions", subscriptions_path %></li>
+      <% end %>
+
+      <li><%= link_to "Setup", current_user %></li>
+      <li><%= link_to "Account", edit_user_path(current_user) %></li>
+      <li><%= link_to "Log out", logout_path, method: "delete" %></li>
+    </ul>
+  </li>
 </ul>

@@ -1,11 +1,11 @@
 <li>
-    <% if subscription.starred? %>
+  <% if subscription.starred? %>
 	<% status = "★ " %>
-    <% else %>
+  <% else %>
 	<% status = "" %>
-    <% end %>
+  <% end %>
 
-    <%= link_to status + (subscription.title || subscription.feed.title || "(Untitled #{subscription.feed.id})").to_s,
-    subscription.feed,
-    class: subscription.updated? ? "updated-sub" : "" %>
+  <%= link_to status + sub_title(subscription.feed),
+              subscription.feed,
+              class: subscription.updated? ? "updated-sub" : "" %>
 </li>

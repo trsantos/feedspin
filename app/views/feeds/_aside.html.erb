@@ -1,47 +1,33 @@
 <aside class="show-for-large">
-    <div class="large-3 columns">
+  <div class="large-3 columns">
 	<section id="info">
-	    <p class="section-heading">Feed info</p>
-	    <% if @feed.logo %>
+	  <p class="section-heading">Feed info</p>
+	  <% if @feed.logo %>
 		<div id="feed-logo">
-		    <%= image_tag @feed.logo, id: 'logo-img' %>
+		  <%= image_tag @feed.logo, id: 'logo-img' %>
 		</div>
-	    <% end %>
-	    <% if @feed.description %>
+	  <% end %>
+	  <% if @feed.description %>
 		<p id="aside-description"><%= sanitize @feed.description %></p>
-	    <% else %>
+	  <% else %>
 		<p id="aside-title"><%= sub_title @feed %></p>
-	    <% end %>
-	    <div id="resources">
+	  <% end %>
+	  <div id="resources">
 		<strong>
-		    <%= link_to "Website", sub_url(@feed), target: "_blank" %><br/>
-		    <%= link_to "Raw feed", @feed.feed_url, target: "_blank" %>
+		  <%= link_to "Website", sub_url(@feed), target: "_blank" %><br/>
+		  <%= link_to "Raw feed", @feed.feed_url, target: "_blank" %>
 		</strong>
-	    </div>
+	  </div>
 	</section>
 	<% if show_payment_aside? %>
-	    <section id="payment">
+	  <section id="payment">
 		<div class="aside-sep"></div>
 		<p class="section-heading">Important</p>
 		<div id="aside-sub">
-		    <p>Your subscription is about to end.</p>
-		    <strong><%= link_to 'Renew it now', new_payment_path %></strong>
+		  <p>You're currently on the trial period.</p>
+		  <strong><%= link_to 'Subscribe now', new_payment_path %></strong>
 		</div>
-	    </section>
+	  </section>
 	<% end %>
-    </div>
+  </div>
 </aside>
-
-<script>
- var logo = document.getElementById("logo-img");
- if (logo) {
-     logo.onerror = function() {
-	 logo.style.display = "none";
-     };
-     logo.onload = function() {
-	 if (logo.width < 20) {
-	     logo.style.display = "none";
-	 }
-     }
- }
-</script>

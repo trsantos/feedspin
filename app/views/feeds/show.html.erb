@@ -1,22 +1,60 @@
 <% provide(:title, @feed.title) %>
 
 <div id="feeds-show-container" class="row">
-    <%= render 'aside' %>
-    <div class="large-9 large-uncentered columns end box">
+  <%= render 'aside' %>
+  <div class="large-9 large-uncentered columns end box">
 	<% if @feed.fetching %>
-	    <p style="margin-top: 1.25rem"><%= icon 'fas', 'sync', class: 'fa-spin', style: 'margin-right: 5px' %> Please wait...</p>
-            <script>
-             window.setTimeout(() => { Turbolinks.visit(); }, 1000);
-            </script>
+	  <p style="margin-top: 1.25rem"><%= icon 'fas', 'sync', class: 'fa-spin', style: 'margin-right: 5px' %> Please wait...</p>
+      <script>
+       if (!window.reloadInterval)
+           window.reloadInterval = window.setInterval(() => Turbolinks.visit(), 2000);
+      </script>
 	<% else %>
-	    <% if @feed.entries.any? %>
+      <script>
+       if (window.reloadInterval)
+           window.clearInterval(reloadInterval);
+      </script>
+	  <% if @feed.entries.any? %>
 		<p id="whats-new" class="show-for-large section-heading">What's new</p>
 		<%= render @entries %>
-	    <% else %>
+		<%= paginate @entries, window: 2 %>
+	  <% else %>
 		<p style="margin-top: 1.25rem">There are no articles for this feed.</p>
-	    <% end %>
+	  <% end %>
 	<% end %>
-    </div>
+  </div>
 </div>
+
+<script>
+ const processImages = () => {
+     // Article images
+     const images = document.querySelectorAll('.thumb img');
+     for (const image of images) {
+         image.onerror = () => image.parentElement.parentElement.style.display = 'none';
+         image.onload = () => {
+             if (image.width < 100 || image.height < 50)
+                 image.parentElement.parentElement.style.display = 'none';
+             if (image.width / image.height < 1.3)
+                 image.classList.add('vert-thumb');
+         }
+     }
+
+     // Favicon
+     const favicon = document.getElementById('favicon');
+     favicon.onerror = () => favicon.setAttribute('src', '<%= image_path 'feed-icon.png' %>');
+
+     // Aside logo
+     const logo = document.getElementById("logo-img");
+     if (logo) {
+         logo.onerror = () => logo.style.display = "none";
+         logo.onload = () => {
+	         if (logo.width < 20)
+	             logo.style.display = "none";
+         }
+     }
+ }
+
+ document.addEventListener('turbolinks:load', () => processImages());
+</script>
 
 <%= link_to 'Next feed', next_path(last_sub: @subscription), class: 'show-for-small-only button expanded', id: 'next' %>

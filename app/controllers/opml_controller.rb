@@ -6,17 +6,17 @@ class OpmlController < ApplicationController
   before_action :set_user, only: [:create]
   before_action :set_opml, only: [:create]
 
-  def new
-  end
+  def new; end
 
   def create
-    @opml.body.outlines.each do |f|
-      feed = Feed.find_or_create_by(feed_url: f.xml_url.to_s)
-      @user.subscriptions.find_or_create_by(feed: feed)
+    @opml.xpath('//outline').each do |outline|
+      feed_url = outline.attribute('xmlUrl').value
+      feed = Feed.find_or_create_by(feed_url:)
+      @user.subscriptions.find_or_create_by(feed:)
     end
     flash[:primary] = 'OPML file imported. Happy reading!'
     redirect_to @user.next_feed
-  rescue
+  rescue StandardError
     flash.now[:alert] = 'The was a problem with the OPML file import.'
     render 'new'
   end
@@ -24,17 +24,18 @@ class OpmlController < ApplicationController
   def export
     f = export_head
     current_user.subscriptions.each do |s|
-      f += export_sub_entry(s)
+      f += export_subscription(s)
     end
     f += export_tail
     f.gsub! '&', '&amp;'
-    send_data f, filename: 'sourcerer.opml'
+    send_data f, filename: 'feedspin.opml'
   end
 
   private
 
   def check_for_opml_file
     return if params[:opml].present?
+
     flash.now[:alert] = 'Please, select the OPML file that you want to import.'
     render 'new'
   end
@@ -45,7 +46,7 @@ class OpmlController < ApplicationController
 
   def set_opml
     contents = params[:opml][:opml_file].read
-    @opml = Feedjira::Feed.parse contents
+    @opml = Nokogiri::XML contents
   end
 
   def export_head
@@ -56,9 +57,9 @@ class OpmlController < ApplicationController
     "  <body>\n"
   end
 
-  def export_sub_entry(s)
-    '    <outline type="rss" text="' + s.feed.title.to_s +
-      '" xmlUrl="' + s.feed.feed_url + "\"/>\n"
+  def export_subscription(sub)
+    '    <outline type="rss" text="' + sub.feed.title.to_s +
+      '" xmlUrl="' + sub.feed.feed_url + "\"/>\n"
   end
 
   def export_tail

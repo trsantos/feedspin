@@ -10,11 +10,12 @@ class FeedsController < ApplicationController
   def show
     cookies.delete :check_for_updated_subs
     @feed = Feed.find(params[:id])
-    @entries = @feed.entries.order(pub_date: :desc) unless @feed.fetching
+    @entries = @feed.entries.order(pub_date: :desc).page(params[:page]).per(10) unless @feed.fetching
   end
 
   def new
     return unless params[:feed]
+
     feed = Feed.find_or_create_by(feed_url: process_url(params[:feed]))
     redirect_to feed
   end
@@ -33,8 +34,9 @@ class FeedsController < ApplicationController
   end
 
   def check_expiration_date
-    return unless @user.feeds.count > Payment.feed_limit &&
-                  Time.current > @user.expiration_date
+    return if @user.stripe_subscription_status.in? %w[active trialing]
+    return if Time.current <= @user.expiration_date
+
     redirect_to new_payment_path
   end
 
@@ -46,6 +48,7 @@ class FeedsController < ApplicationController
     return unless @subscription
     return unless cookies[:check_for_updated_subs]
     return if @user.subscriptions.exists?(updated: true)
+
     flash.now[:primary] =
       'You have no updated feeds right now. Check back later!'
   end

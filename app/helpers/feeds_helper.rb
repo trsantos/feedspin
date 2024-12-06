@@ -1,29 +1,20 @@
 module FeedsHelper
   def sub_title(feed)
-    if @subscription
-      @subscription.title || feed.title
-    else
-      feed.title
-    end
+    @subscription&.title || feed.title || "[#{feed.feed_url}]"
   end
 
   def sub_url(feed)
-    if @subscription
-      @subscription.site_url || feed.site_url
-    else
-      feed.site_url
-    end
+    @subscription&.site_url || feed.site_url || feed.feed_url
   end
 
   def favicon_for(url)
     uri = URI.parse url
-    uri.scheme + '://' + uri.host + '/favicon.ico'
-  rescue
+    "https://icons.duckduckgo.com/ip2/#{uri.host}.ico"
+  rescue StandardError
     image_path 'feed-icon.png'
   end
 
   def show_payment_aside?
-    @user.feeds.count > Payment.feed_limit &&
-      Time.current > @user.expiration_date - Payment.trial_duration
+    Time.current > @user.expiration_date - Payment.trial_duration && @user.stripe_subscription_status.nil?
   end
 end

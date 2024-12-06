@@ -1,10 +1,10 @@
 module ApplicationHelper
   def full_title(page_title = '')
-    base_title = 'Sourcerer'
+    base_title = 'FeedSpin'
     if page_title.empty?
       base_title
     else
-      "#{page_title} | #{base_title}"
+      raw "#{page_title} | #{base_title}"
     end
   end
 
@@ -14,9 +14,10 @@ module ApplicationHelper
 
   def process_url(url)
     return nil if url.blank?
+
     url = url.strip
-    url = 'http://' + url unless url.start_with?('http:', 'https:')
-    if url.include?('youtube.com/user') || url.include?('youtube.com/channel')
+    url = "http://#{url}" unless url.start_with?('http:', 'https:')
+    if url.include?('www.youtube.com/@') || url.include?('www.youtube.com/channel')
       get_youtube_feed url
     else
       url
@@ -24,11 +25,10 @@ module ApplicationHelper
   end
 
   def get_youtube_feed(url)
-    require 'open-uri'
-    doc = Nokogiri::HTML(open(url))
-    id = doc.css("meta[itemprop='channelId']").first.attributes['content'].value
-    'https://www.youtube.com/feeds/videos.xml?channel_id=' + id
-  rescue
+    body = HTTParty.get(url).body
+    doc = Nokogiri::HTML(body)
+    doc.css("link[title='RSS']").first.attributes['href'].value
+  rescue StandardError
     url
   end
 end

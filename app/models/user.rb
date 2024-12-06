@@ -1,21 +1,23 @@
 class User < ApplicationRecord
   has_secure_password
 
+  has_one :payment
+
   has_many :subscriptions, dependent: :delete_all
   has_many :feeds, through: :subscriptions
   has_many :entries, through: :feeds
-  has_many :payments
 
   before_create { generate_token(:auth_token) }
   before_create :set_expiration_date
   before_save :downcase_email
 
   validates :name,  presence: true
-  VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
+  VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d-]+(\.[a-z\d-]+)*\.[a-z]+\z/i
+
   validates :email,
             presence: true, format: { with: VALID_EMAIL_REGEX },
             uniqueness: { case_sensitive: false }
-  validates :password, length: { minimum: 6 }, allow_blank: true
+  validates :password, length: { minimum: 8 }, allow_blank: true
 
   def generate_token(column)
     loop do
@@ -32,8 +34,7 @@ class User < ApplicationRecord
   end
 
   def unfollow(feed)
-    s = subscriptions.find_by(feed_id: feed.id)
-    s.destroy if s
+    subscriptions.find_by(feed_id: feed.id).destroy
   end
 
   def following?(feed)
@@ -47,6 +48,18 @@ class User < ApplicationRecord
     else
       self
     end
+  end
+
+  def delete_stripe_customer
+    return if stripe_customer_id.nil?
+
+    Stripe::Customer.delete(stripe_customer_id)
+  end
+
+  def update_stripe_customer
+    return if stripe_customer_id.nil?
+
+    Stripe::Customer.update(stripe_customer_id, { email:, name: })
   end
 
   private
@@ -63,7 +76,8 @@ class User < ApplicationRecord
   def updated_sub
     subscriptions
       .where(updated: true)
-      .order(starred: :desc, visited_at: :asc).first
+      .order(starred: :desc, visited_at: :asc)
+      .first
   end
 
   def random_sub

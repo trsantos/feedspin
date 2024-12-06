@@ -1,82 +1,67 @@
 <div id="homepage">
-    <section id="top">
+  <section id="top">
 	<header>
-	    <div class="row">
+	  <div class="row">
 		<div class="columns">
-		    <%= image_tag 'logo_white.png', id: 'logo', class: 'float-left' %>
-		    <%= link_to "Log in", login_path, id: 'login-button', class: "button hollow float-right radius" %>
+		  <%= image_tag 'logo_white.svg', id: 'logo', class: 'float-left' %>
+		  <%= link_to "Log in", login_path, id: 'login-button', class: "button hollow float-right radius" %>
 		</div>
-	    </div>
+	  </div>
 	</header>
 	<div class="row">
-	    <div class="columns">
-		<h1 class="tagline text-center">The sorcerer of news sources</h1>
-	    </div>
+	  <div class="columns">
+		<h1 class="tagline text-center">Stay on top of your favorite feeds</h1>
+	  </div>
 	</div>
 	<div class="row">
-	    <div class="medium-5 medium-centered large-4 columns">
-		<%= link_to "Get started for free", signup_path, class: "button large expanded radius" %>
-	    </div>
+	  <div class="medium-5 medium-centered large-4 columns">
+		<%= link_to "Sign up", signup_path, class: "button large expanded radius" %>
+	  </div>
+	  <p id="price-info" class="text-center">Free for <%= Payment.trial_duration.in_weeks.floor %> weeks, then <%= number_to_currency(Payment.monthly_price) %>/month.</p>
 	</div>
-    </section>
+  </section>
 
-    <section id="screenshot">
+  <section id="screenshot">
 	<div class="row">
-	    <div class="columns">
-		<picture class="float-center">
-		    <source srcset="<%= image_path 'ss-large.png' %>" media="(min-width: 64em)">
-		    <source srcset="<%= image_path 'ss-medium.png' %>" media="(min-width: 40em)">
-		    <source srcset="<%= image_path 'ss-small.png' %>">
-		    <img src="<%= image_path 'ss-large.png' %>">
+	  <div class="columns">
+		<picture>
+		  <source srcset="<%= image_path 'ss-large.png' %>" media="(min-width: 64em)">
+		  <source srcset="<%= image_path 'ss-medium.png' %>" media="(min-width: 40em)">
+		  <source srcset="<%= image_path 'ss-small.png' %>">
+		  <img src="<%= image_path 'ss-large.png' %>">
 		</picture>
-	    </div>
+	  </div>
 	</div>
-    </section>
+  </section>
 
-    <section class="main-features">
+  <section class="main-features">
 	<div class="row small-up-1 medium-up-2">
-	    <div class="column">
+	  <div class="column">
 		<%= icon 'fas', 'newspaper' %>
 		<p>Follow your favorite websites, blogs, comics and more. Subscribe to anything with an RSS feed.</p>
-	    </div>
-	    <div class="column">
+	  </div>
+	  <div class="column">
 		<%= icon 'fas', 'magic' %>
 		<p>Get news from all your sources, no exceptions. High volume feeds will not appear too often.</p>
-	    </div>
-	    <div class="column">
+	  </div>
+	  <div class="column">
 		<%= icon 'fas', 'star' %>
 		<p>Star your must-read sources. These will be shown before anything else, whenever updated.</p>
-	    </div>
-	    <div class="column">
+	  </div>
+	  <div class="column">
 		<%= icon 'fas', 'desktop' %>
 		<%= icon 'fas', 'tablet' %>
 		<%= icon 'fas', 'mobile' %>
-		<p>Read on the go. Sourcerer works on all your devices. No app to install, just visit the website.</p>
-	    </div>
+		<p>Read on the go. FeedSpin works on all your devices. No app to install, just visit the website.</p>
+	  </div>
 	</div>
-    </section>
+  </section>
 
-    <section id="pricing">
+  <footer>
 	<div class="row text-center">
-	    <div class="column">
-		<header>
-		    <h4>Pricing</h2>
-		</header>
-		<ul class="no-bullet">
-		    <li><strong>Free:</strong> follow up to <%= Payment.feed_limit %> feeds.</li>
-		    <li><strong>$<%= Payment.price %> / year:</strong> unlimited feeds, pay after <%= Payment.trial_duration.to_i/60/60/24 %>-day trial.</li>
-		</ul>
-	    </div>
+	  <div class="column">
+		<%= mail_to 'thiago@trsantos.com', icon('fas', 'envelope', 'Email Us', style: 'margin-right: 1px'), target: '_blank', style: 'margin-right: 15px' %>
+	  </div>
 	</div>
-    </section>
-
-    <footer>
-	<div class="row text-center">
-	    <div class="column">
-		<p>Sourcerer is a Free and Open Source Software created by Thiago Rodrigues.</p>
-		<%= mail_to 'thiago@fastmail.com', icon('envelope-o', 'Email', style: 'margin-right: 1px'), target: '_blank', style: 'margin-right: 15px' %>
-		<%= link_to icon('github', 'GitHub'), 'https://github.com/trsantos/sourcerer', target: '_blank' %>
-	    </div>
-	</div>
-    </footer>
+  </footer>
 </div>

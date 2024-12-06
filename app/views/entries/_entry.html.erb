@@ -1,42 +1,29 @@
 <% id = entry.id.to_s %>
 <article>
-    <header>
+  <header>
 	<h5 class="<%= 'old' if old? entry %>">
-	    <strong>
+	  <strong>
 		<%= link_to sanitize(entry.title), entry.url, class: 'entry-title', target: '_blank' %>
-	    </strong>
+	  </strong>
 	</h5>
-    </header>
-    <div class="row">
+  </header>
+  <div class="row">
 	<div class="small-12 columns">
-	    <% if entry.image %>
+	  <% if entry.image %>
 		<div class="thumb <%= 'small-thumb' unless @feed.has_only_images %>">
-		    <a href="<%= entry.url %>" target="_blank">
-			<%= image_tag entry.image, id: "img#{id}" %>
-		    </a>
+		  <a href="<%= entry.url %>" target="_blank">
+			<%= image_tag entry.image %>
+		  </a>
 		</div>
-	    <% end %>
-	    <% unless entry.description.blank? %>
+	  <% end %>
+	  <% unless entry.description.blank? %>
 		<p class="description">
-		    <%= strip_tags entry.description %>
+		  <%= sanitize entry.description, tags: ['a'] %>
 		</p>
-	    <% end %>
+	  <% end %>
 	</div>
-    </div>
-    <p class="timestamp">
+  </div>
+  <p class="timestamp">
 	<%= time_ago_in_words(entry.pub_date).capitalize %> ago
-    </p>
-    <script>
-     var img<%= id %> = document.getElementById("img<%= id %>");
-     if (img<%= id %>) {
-	 img<%= id %>.onerror = function() {
-	     img<%= id %>.parentElement.parentElement.style.display = "none";
-	 };
-	 img<%= id %>.onload = function() {
-	     if (img<%= id %>.width < 100) {
-		 img<%= id %>.parentElement.parentElement.style.display = "none";
-	     }
-	 };
-     }
-    </script>
+  </p>
 </article>

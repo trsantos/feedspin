@@ -1,2 +1,2 @@
-web: bundle exec puma
+web: bin/rails server
 worker: bundle exec sidekiq

@@ -10,9 +10,7 @@ class SubscriptionsController < ApplicationController
       flash[:primary] = 'You are not subscribed to any feeds yet.'
       redirect_to user
     end
-    @subscriptions = user.subscriptions.includes(:feed).order(
-      updated: :desc, starred: :desc, visited_at: :asc
-    )
+    @subscriptions = user.subscriptions.includes(:feed).order(updated: :desc, starred: :desc, visited_at: :asc)
   end
 
   def create
@@ -29,7 +27,7 @@ class SubscriptionsController < ApplicationController
 
   def update
     set_update_params
-    @subscription.update_attributes(sub_params)
+    @subscription.update(sub_params)
     @feed = @subscription.feed
     respond_to do |format|
       format.html { redirect_to @feed }
@@ -48,7 +46,7 @@ class SubscriptionsController < ApplicationController
   end
 
   def next
-    mark_last_feed_as_read if params[:last_sub]
+    visit_feed if params[:last_sub]
     cookies[:check_for_updated_subs] = true
     redirect_to current_user.next_feed
   end
@@ -66,12 +64,13 @@ class SubscriptionsController < ApplicationController
 
   def set_update_title
     title = params[:subscription][:title]
-    params[:subscription][:title] = nil if title && title.blank?
+    params[:subscription][:title] = nil if title&.blank?
   end
 
   def set_update_url
     site_url = params[:subscription][:site_url]
     return if site_url.nil?
+
     params[:subscription][:site_url] = process_url site_url
   end
 
@@ -81,11 +80,12 @@ class SubscriptionsController < ApplicationController
     redirect_to root_url unless current_user == @user
   end
 
-  def mark_last_feed_as_read
+  def visit_feed
     sub = Subscription.find(params[:last_sub])
     return unless sub.updated?
-    sub.update_attributes(visited_at: Time.current, updated: false)
-  rescue
+
+    sub.update(visited_at: Time.current, updated: false, snoozed_at: nil)
+  rescue StandardError
     nil
   end
 end

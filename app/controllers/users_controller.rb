@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
-  before_action :require_no_authentication, only: [:new, :create]
-  before_action :logged_in_user, except: [:new, :create]
-  before_action :correct_user,   only: [:show, :edit, :update, :destroy]
+  before_action :require_no_authentication, only: %i[new create]
+  before_action :logged_in_user, except: %i[new create]
+  before_action :correct_user, only: %i[show edit update destroy]
 
   def show
     @user = User.find(params[:id])
@@ -23,18 +23,26 @@ class UsersController < ApplicationController
 
   def edit
     @user = User.find(params[:id])
+    @period_end_message = case [@user.stripe_subscription_status.present?, @user.cancel_at_period_end?]
+                          when [true, false] then 'Next billing date:'
+                          when [true, true] then 'Subscription end date:'
+                          else 'Trial end date:' end
+    @expiration_date = @user.expiration_date.to_date.to_formatted_s(:long)
   end
 
   def update
-    @user = User.find(params[:id])
-    if @user.update_attributes(user_params)
+    user = User.find(params[:id])
+    if user.update(user_params)
+      user.update_stripe_customer
       flash.now[:success] = 'Profile updated.'
     end
     render 'edit'
   end
 
   def destroy
-    User.find(params[:id]).destroy
+    user = User.find(params[:id])
+    user.delete_stripe_customer
+    user.destroy
     flash[:primary] = 'User deleted succesfully.'
     redirect_to root_url
   end
@@ -49,6 +57,11 @@ class UsersController < ApplicationController
   end
 
   private
+
+  def update_stripe_customer
+    customer_params = { email: params[:email], name: params[:name] }
+    Stripe::Customer.update(@user.stripe_customer_id, customer_params)
+  end
 
   def user_params
     params

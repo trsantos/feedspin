@@ -1,28 +1,13 @@
-<% expiration_date = current_user.expiration_date %>
-<% expired = Time.current > expiration_date %>
-
 <div class="row payment-container simple-container">
-    <div class="small-11 medium-7 small-centered columns box">
-	<header>
-	    <h3>Subscription renewal</h3>
-	</header>
+  <div class="small-11 medium-7 small-centered columns box">
+    <header>
+      <h3>Become a subscriber</h3>
+    </header>
 
-	<% if expired %>
-	    <p>Your subscription to Sourcerer expired <%= time_ago_in_words expiration_date %> ago.</p>
-	<% else %>
-	    <p>Your subscription to Sourcerer will expire in <%= distance_of_time_in_words_to_now expiration_date %>.</p>
-	<% end %>
+    <p>Keep using FeedSpin <%= 'after your trial period' if @user.stripe_subscription_status.nil? %> for <strong><%= number_to_currency(@price) %>/month</strong>.</p>
 
-	<p>If you want to keep using the app for one more year, please consider the pricing information below and proceed to the checkout.</p>
-
-	<strong>Price: </strong>$<%= Payment.price %><br/>
-	<strong>New end date: </strong><%= new_expiration_date %><br/>
-	<br/>
-
-	<%= form_for(Payment.new) do |f| %>
-	    <%= f.submit 'Checkout with PayPal', class: 'button radius expanded', data: { disable_with: 'Please wait...' } %>
-	<% end %>
-
-	<p><%= image_tag 'brazil.png', id: 'br-flag' %> Brazilian users, please use <%= link_to 'this link', payments_path(br: true), method: 'post' %> to pay in Reais.</p>
-    </div>
+    <%= form_with url: payments_path do |f| %>
+      <%= f.submit 'Continue to checkout', class: 'button radius expanded', data: { disable_with: 'Please wait...' } %>
+    <% end %>
+  </div>
 </div>

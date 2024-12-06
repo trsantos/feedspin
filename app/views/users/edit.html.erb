@@ -1,26 +1,39 @@
 <% provide(:title, "Account") %>
 
 <div class="row simple-container">
-    <div class="small-11 medium-7 small-centered columns box">
+  <div class="small-11 medium-7 small-centered columns box">
 	<header>
-	    <h3>Your account</h3>
+	  <h3>Your account</h3>
 	</header>
 
 	<%= form_for(@user) do |f| %>
-	    <%= render 'shared/error_messages' %>
+	  <%= render 'shared/error_messages' %>
 
-	    <%= f.label :name %>
-	    <%= f.text_field :name %>
+	  <%= f.label :name %>
+	  <%= f.text_field :name %>
 
-	    <%= f.label :email %>
-	    <%= f.email_field :email %>
+	  <%= f.label :email %>
+	  <%= f.email_field :email %>
 
-	    <%= f.submit "Save changes", class: "button radius expanded", data: { disable_with: "Please wait..." } %>
+	  <%= f.submit "Save changes", class: "button radius expanded", data: { disable_with: "Please wait..." } %>
 	<% end %>
+
+
+    <p>
+      <strong><%= @period_end_message %></strong> <%= @expiration_date %><br>
+      <% if @user.stripe_subscription_status.present? %>
+        <%= link_to "Manage subscription", billing_portal_path %>
+      <% else %>
+        <%= link_to "Subscribe now", new_payment_path %>
+      <% end %>
+    </p>
+
+	<p>
+    </p>
+
 	<p data-no-turbolink>
-	    <strong>Subscription end date:</strong> <%= @user.expiration_date.to_date.to_formatted_s(:long) %><br>
-	    <%= link_to "Export your data", opml_export_path %><br>
-	    <%= link_to "Delete your account", current_user, method: :delete, data: { confirm: "Are you sure you want to delete your account? This can't be undone." } %>
+	  <%= link_to "Export your data", opml_export_path %><br>
+	  <%= link_to "Delete your account", current_user, method: :delete, data: { confirm: "Are you sure you want to delete your account? This can't be undone." } %>
 	</p>
-    </div>
+  </div>
 </div>

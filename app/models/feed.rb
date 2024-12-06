@@ -10,7 +10,7 @@ class Feed < ApplicationRecord
   after_create :delayed_update
 
   def self.entries_per_feed
-    10
+    250
   end
 
   def self.update_all_feeds
@@ -19,9 +19,10 @@ class Feed < ApplicationRecord
     end
   end
 
-  def update
+  def update_feed
     fj_feed = fetch_and_parse
     return if fj_feed.is_a? Integer
+
     transaction do
       update_entries fj_feed
       update_feed_attributes fj_feed
@@ -39,30 +40,38 @@ class Feed < ApplicationRecord
 
   def fetch_and_parse
     setup_fj
-    Feedjira::Feed.fetch_and_parse feed_url
-  rescue
+    xml = HTTParty.get(feed_url).body
+    Feedjira.parse xml
+  rescue StandardError
     update_attribute :fetching, false
     0
   end
 
   def update_feed_attributes(fj_feed)
-    update_attributes(title: fj_feed.title,
-                      site_url: process_url(fj_feed.url),
-                      description: find_feed_description(fj_feed),
-                      logo: check_feed_logo(fj_feed.logo),
-                      has_only_images: only_images?,
-                      fetching: false,
-                      updated_at: Time.current)
+    update(title: fj_feed.title,
+           site_url: fj_feed.url,
+           description: find_feed_description(fj_feed),
+           logo: find_feed_image(fj_feed),
+           has_only_images: only_images?,
+           fetching: false,
+           updated_at: Time.current)
+  end
+
+  def find_feed_image(fj_feed)
+    fj_feed.image.url
+  rescue StandardError
+    nil
   end
 
   def find_feed_description(fj_feed)
     fj_feed.description
-  rescue
+  rescue StandardError
     nil
   end
 
   def check_feed_logo(logo)
     return if logo.nil?
+
     if (logo.include? 'wp.com/i/buttonw-com') ||
        (logo.include? 'creativecommons.org/images/public')
       nil
@@ -72,52 +81,41 @@ class Feed < ApplicationRecord
   end
 
   def update_entries(fj_feed)
-    old_entries_count = entries.count
-    fj_feed.entries.first(Feed.entries_per_feed).reverse_each do |fj_entry|
-      insert_or_update_entry fj_entry
+    fj_feed.entries.reverse_each do |fj_entry|
+      upsert_entry fj_entry
     end
-    return unless entries.count > old_entries_count
-    discard_old_entries
     mark_subscriptions_as_updated
   end
 
-  def discard_old_entries
-    self.entries = entries.order(updated_at: :desc).first(Feed.entries_per_feed)
-  end
-
   def mark_subscriptions_as_updated
-    subscriptions.where(updated: false).update_all(updated: true)
+    last_entry_pub_date = entries.last.pub_date
+    subscriptions.where(updated: false, visited_at: ..last_entry_pub_date).update_all(updated: true)
   end
 
-  def insert_or_update_entry(fj_entry)
-    entries.find_by(url: fj_entry.url).touch
-  rescue
-    insert_entry fj_entry
-  end
-
-  def insert_entry(e)
-    description = e.content || e.summary || ''
-    entries.create(title:       (e.title unless e.title.blank?),
-                   description: description,
-                   pub_date:    find_date(e.published),
-                   image:       find_image(e, description),
-                   url:         e.url)
+  def upsert_entry(fj_entry)
+    description = fj_entry.content || fj_entry.summary || ''
+    entries.create_with(
+      title: (fj_entry.title unless fj_entry.title.blank?),
+      description:,
+      pub_date: find_date(fj_entry.published),
+      image: find_image(fj_entry, description)
+    ).find_or_create_by!(fj_entry_id: fj_entry.entry_id, url: fj_entry.url)
   end
 
   def setup_fj
-    Feedjira::Feed
-      .add_common_feed_entry_element(:enclosure, value: :url, as: :image)
-    Feedjira::Feed
-      .add_common_feed_entry_element('media:thumbnail', value: :url, as: :image)
-    Feedjira::Feed
-      .add_common_feed_entry_element('media:content', value: :url, as: :image)
+    Feedjira::Feed.add_common_feed_entry_element(:enclosure, value: :url, as: :image)
+    Feedjira::Feed.add_common_feed_entry_element('media:thumbnail', value: :url, as: :image)
+    Feedjira::Feed.add_common_feed_entry_element('media:content', value: :url, as: :image)
 
-    Feedjira::Feed.add_common_feed_element(:url, as: :logo, ancestor: :image)
-    Feedjira::Feed.add_common_feed_element(:logo, as: :logo)
+    # Feedjira::Feed.add_common_feed_element(:url, as: :logo, ancestor: :image)
+    # Feedjira::Feed.add_common_feed_element(:logo, as: :logo)
+
+    # Feedjira.logger.level = Logger::FATAL
   end
 
   def find_date(pub_date)
     return Time.current if pub_date.nil? || pub_date > Time.current
+
     pub_date
   end
 
@@ -127,6 +125,7 @@ class Feed < ApplicationRecord
 
   def process_image(img)
     return if bad_image?(img)
+
     hacks parse_image img
   end
 
@@ -134,18 +133,21 @@ class Feed < ApplicationRecord
     # Need to add http here as some images won't
     # load because ssl_error_bad_cert_domain
     return 'http:' + img if img.start_with?('//')
+
     uri = URI.parse feed_url
     start = uri.scheme + '://' + uri.host
     return start + img if img.start_with? '/'
+
     # I don't remeber why this is here. Maybe not needed?
     return start + uri.path + img unless img.start_with? 'http'
+
     img
   end
 
   def image_from_description(description)
     doc = Nokogiri::HTML description
     doc.css('img').first.attributes['src'].value
-  rescue
+  rescue StandardError
     nil
   end
 

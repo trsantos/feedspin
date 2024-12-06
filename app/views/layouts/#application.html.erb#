@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title><%= full_title(yield(:title)) %></title>
+	<%= stylesheet_link_tag 'application', 'data-turbolinks-track': 'reload' %>
+	<%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+	<%= csrf_meta_tags %>
+	<%= favicon_link_tag %>
+  </head>
+  <body class="<%= 'dark-page' unless logged_in? %>">
+	<% if logged_in? %>
+	  <%= render 'layouts/nav' %>
+	<% end %>
+	<% flash.each do |message_type, message| %>
+	  <div class="text-center callout <%= message_type %>">
+		<%= message %>
+	  </div>
+	<% end %>
+	<%= yield %>
+  </body>
+</html>
