@@ -18,7 +18,7 @@
 	  <% end %>
 	  <% unless entry.description.blank? %>
 		<p class="description">
-		  <%= sanitize entry.description, tags: ['a'] %>
+		  <%= sanitize entry.description, tags: ['a'], attributes: ['href'] %>
 		</p>
 	  <% end %>
 	</div>
