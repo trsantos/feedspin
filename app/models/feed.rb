@@ -88,6 +88,8 @@ class Feed < ApplicationRecord
   end
 
   def mark_subscriptions_as_updated
+    return if entries.empty?
+
     last_entry_pub_date = entries.last.pub_date
     subscriptions.where(updated: false, visited_at: ..last_entry_pub_date).update_all(updated: true)
   end
