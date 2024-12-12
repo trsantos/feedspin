@@ -98,19 +98,22 @@ class Feed < ApplicationRecord
       title: (fj_entry.title unless fj_entry.title.blank?),
       description:,
       pub_date: find_date(fj_entry.published),
-      image: find_image(fj_entry, description)
+      image: find_image(fj_entry, description),
+      audio: find_audio(fj_entry)
     ).find_or_create_by!(fj_entry_id: fj_entry.entry_id, url: fj_entry.url)
   end
 
   def setup_fj
-    Feedjira::Feed.add_common_feed_entry_element(:enclosure, value: :url, as: :image)
     Feedjira::Feed.add_common_feed_entry_element('media:thumbnail', value: :url, as: :image)
     Feedjira::Feed.add_common_feed_entry_element('media:content', value: :url, as: :image)
 
-    # Feedjira::Feed.add_common_feed_element(:url, as: :logo, ancestor: :image)
-    # Feedjira::Feed.add_common_feed_element(:logo, as: :logo)
-
     # Feedjira.logger.level = Logger::FATAL
+  end
+
+  def find_audio(entry)
+    entry.enclosure_url if entry.enclosure_type.start_with? 'audio'
+  rescue NoMethodError
+    nil
   end
 
   def find_date(pub_date)

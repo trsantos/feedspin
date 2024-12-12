@@ -16,13 +16,16 @@
 		  </a>
 		</div>
 	  <% end %>
-	  <% unless entry.description.blank? %>
+	  <% if entry.description? %>
 		<p class="description">
 		  <%= sanitize entry.description, tags: ['a'], attributes: ['href'] %>
 		</p>
 	  <% end %>
 	</div>
   </div>
+  <% if entry.audio? %>
+    <%= audio_tag entry.audio, preload: :metadata, controls: true %>
+  <% end %>
   <p class="timestamp">
 	<%= time_ago_in_words(entry.pub_date).capitalize %> ago
   </p>

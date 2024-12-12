@@ -225,6 +225,11 @@ $text-color: #0A0A0A;
             margin-top: 0px;
             margin-bottom: 5px;
         }
+        audio {
+            border-radius: 2px;
+            height: 40px;
+            width: 100%;
+        }
         .timestamp {
             font-size: small;
             color: #444;
