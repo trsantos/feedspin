@@ -124,9 +124,9 @@ class Feed < ApplicationRecord
   end
 
   def process_image(img)
-    return if bad_image?(img)
+    return nil if img.nil?
 
-    hacks parse_image img
+    parse_image img
   end
 
   def parse_image(img)
@@ -149,26 +149,6 @@ class Feed < ApplicationRecord
     doc.css('img').first.attributes['src'].value
   rescue StandardError
     nil
-  end
-
-  def hacks(img)
-    if img.include? 'wordpress.com'
-      img.sub!(/\?.*/, '')
-      img += '?w=800'
-    elsif (img.include? 'img.youtube.com') || (img.include? 'i.ytimg.com')
-      img.sub! '/default', '/hqdefault'
-    elsif (img.include? 'googleusercontent.com') ||
-          (img.include? 'blogspot.com')
-      img.sub! 's72-c', 's640'
-    end
-    img
-  end
-
-  def bad_image?(img)
-    img.nil? ||
-      (img.include? 'feedburner.com') ||
-      (img.include? 'feedsportal.com') ||
-      (img.include? '/comments/') # Wordpress
   end
 
   def delayed_update

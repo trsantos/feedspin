@@ -1,6 +1,7 @@
 /* Constants */
 $bg-color: #F5F5F5;
-$img-bg-color: #EEE;
+$img-bg-color: #F9F9F9;
+$img-shadow-color: #EEE;
 $box-color: white;
 $fh-color: #20242F;
 $fh-height: 55px;
@@ -212,10 +213,8 @@ $text-color: #0A0A0A;
                 display: block;
                 margin-left: auto;
                 margin-right: auto;
+                max-height: 250px;
             }
-        }
-        .vert-thumb {
-            max-height: 250px;
         }
         .description {
             font-size: medium;
@@ -260,7 +259,7 @@ $text-color: #0A0A0A;
     article {
         .small-thumb {
             display: block;
-            box-shadow: 0px 0px 0px 1px $img-bg-color;
+            box-shadow: 0px 0px 0px 1px $img-shadow-color;
         }
         img {
             border-radius: 2px;
