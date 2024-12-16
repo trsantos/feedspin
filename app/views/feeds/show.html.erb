@@ -32,7 +32,7 @@
      for (const image of images) {
          image.onerror = () => image.parentElement.parentElement.style.display = 'none';
          image.onload = () => {
-             if (image.width < 100 || image.height < 50)
+             if (image.width < 100 || image.height < 25)
                  image.parentElement.parentElement.style.display = 'none';
          }
      }
