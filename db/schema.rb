@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_12_11_190538) do
+ActiveRecord::Schema[7.2].define(version: 2024_12_16_192225) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -25,8 +25,8 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_11_190538) do
     t.string "image"
     t.string "fj_entry_id"
     t.string "audio"
+    t.index ["feed_id", "fj_entry_id"], name: "index_entries_on_feed_id_and_fj_entry_id", unique: true
     t.index ["feed_id"], name: "index_entries_on_feed_id"
-    t.index ["fj_entry_id", "url"], name: "index_entries_on_fj_entry_id_and_url"
     t.index ["title"], name: "index_entries_on_title"
   end
 

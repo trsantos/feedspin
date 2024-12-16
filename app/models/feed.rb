@@ -10,11 +10,11 @@ class Feed < ApplicationRecord
   after_create :delayed_update
 
   def self.entries_per_feed
-    250
+    150
   end
 
   def self.update_all_feeds
-    Feed.find_each do |f|
+    Feed.where(updated_at: ..1.hour.ago).find_each do |f|
       FeedUpdateJob.perform_later f
     end
   end
@@ -24,7 +24,7 @@ class Feed < ApplicationRecord
     return if fj_feed.is_a? Integer
 
     transaction do
-      update_entries fj_feed
+      upsert_entries fj_feed
       update_feed_attributes fj_feed
     end
   end
@@ -69,40 +69,38 @@ class Feed < ApplicationRecord
     nil
   end
 
-  def check_feed_logo(logo)
-    return if logo.nil?
-
-    if (logo.include? 'wp.com/i/buttonw-com') ||
-       (logo.include? 'creativecommons.org/images/public')
-      nil
-    else
-      logo
-    end
-  end
-
-  def update_entries(fj_feed)
-    fj_feed.entries.reverse_each do |fj_entry|
+  def upsert_entries(fj_feed)
+    old_entries_count = entries.count
+    fj_feed.entries.first(Feed.entries_per_feed).reverse_each do |fj_entry|
       upsert_entry fj_entry
     end
+    return unless entries.count > old_entries_count
+
+    discard_old_entries
     mark_subscriptions_as_updated
+  end
+
+  def discard_old_entries
+    subquery = entries.order(updated_at: :desc).limit(Feed.entries_per_feed).select(:id)
+    entries.where.not(id: subquery).delete_all
   end
 
   def mark_subscriptions_as_updated
     return if entries.empty?
 
-    last_entry_pub_date = entries.last.pub_date
-    subscriptions.where(updated: false, visited_at: ..last_entry_pub_date).update_all(updated: true)
+    subscriptions.where(updated: false).update_all(updated: true)
   end
 
   def upsert_entry(fj_entry)
-    description = fj_entry.content || fj_entry.summary || ''
-    entries.create_with(
-      title: (fj_entry.title unless fj_entry.title.blank?),
-      description:,
-      pub_date: find_date(fj_entry.published),
-      image: find_image(fj_entry, description),
-      audio: find_audio(fj_entry)
-    ).find_or_create_by!(fj_entry_id: fj_entry.entry_id, url: fj_entry.url)
+    entry_params = { audio: find_audio(fj_entry),
+                     description: fj_entry.content || fj_entry.summary || '',
+                     feed_id: id,
+                     fj_entry_id: fj_entry.id,
+                     image: find_image(fj_entry, description),
+                     pub_date: find_date(fj_entry.published),
+                     title: find_title(fj_entry),
+                     url: fj_entry.url }
+    entries.upsert(entry_params, unique_by: %i[feed_id fj_entry_id])
   end
 
   def setup_fj
@@ -110,6 +108,10 @@ class Feed < ApplicationRecord
     Feedjira::Feed.add_common_feed_entry_element('media:content', value: :url, as: :image)
 
     # Feedjira.logger.level = Logger::FATAL
+  end
+
+  def find_title(entry)
+    entry.title unless entry.title.blank?
   end
 
   def find_audio(entry)
