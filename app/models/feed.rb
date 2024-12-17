@@ -92,8 +92,9 @@ class Feed < ApplicationRecord
   end
 
   def upsert_entry(fj_entry)
+    description = fj_entry.content || fj_entry.summary || ''
     entry_params = { audio: find_audio(fj_entry),
-                     description: fj_entry.content || fj_entry.summary || '',
+                     description:,
                      feed_id: id,
                      fj_entry_id: fj_entry.id,
                      image: find_image(fj_entry, description),
