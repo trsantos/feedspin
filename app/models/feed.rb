@@ -113,7 +113,7 @@ class Feed < ApplicationRecord
 
   def from_enclosure(entry, type)
     entry.enclosure_url if entry.enclosure_type.start_with? type
-  rescue NoMemoryError
+  rescue NoMethodError
     nil
   end
 
