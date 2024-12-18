@@ -111,14 +111,18 @@ class Feed < ApplicationRecord
     # Feedjira.logger.level = Logger::FATAL
   end
 
+  def from_enclosure(entry, type)
+    entry.enclosure_url if entry.enclosure_type.start_with? type
+  rescue NoMemoryError
+    nil
+  end
+
   def find_title(entry)
     entry.title unless entry.title.blank?
   end
 
   def find_audio(entry)
-    entry.enclosure_url if entry.enclosure_type.start_with? 'audio'
-  rescue NoMethodError
-    nil
+    from_enclosure(entry, 'audio')
   end
 
   def find_date(pub_date)
@@ -128,7 +132,8 @@ class Feed < ApplicationRecord
   end
 
   def find_image(entry, desc)
-    process_image entry.image || image_from_description(desc)
+    image = entry.image || from_enclosure(entry, 'image') || image_from_description(desc)
+    process_image image
   end
 
   def process_image(img)
