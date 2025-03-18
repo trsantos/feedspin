@@ -1,7 +1,6 @@
-#!/bin/bash
+#!/bin/bash -i
 
 set -e
-. /etc/environment
 git pull
 bundle install
 bundle exec bootsnap precompile --gemfile

@@ -1,8 +1,8 @@
 source 'https://rubygems.org'
 
-ruby '3.3.6'
+ruby '3.4.2'
 
-gem 'rails', '~> 7.2.0'
+gem 'rails', '~> 8.0.0'
 
 gem 'bcrypt'
 gem 'coffee-rails'
@@ -23,7 +23,6 @@ gem 'foundation-rails', '~> 6.3.0'
 gem 'httparty'
 gem 'kaminari'
 gem 'puma'
-gem 'sidekiq'
 gem 'stripe', '~> 13.0'
 
 gem 'bootsnap', require: false
@@ -35,6 +34,7 @@ group :development, :test do
 end
 
 group :development do
+  gem 'dockerfile-rails'
   gem 'solargraph'
   gem 'spring'
   gem 'web-console'
@@ -45,7 +45,3 @@ end
 
 group :production do
 end
-
-gem "dockerfile-rails", ">= 1.6", :group => :development
-
-gem "redis", "~> 5.3"
