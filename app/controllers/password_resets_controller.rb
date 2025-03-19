@@ -1,30 +1,28 @@
 class PasswordResetsController < ApplicationController
   before_action :require_no_authentication
-  before_action :set_user, only: [:edit, :update]
+  before_action :set_user, only: %i[edit update]
 
-  def new
-  end
+  def new; end
 
   def create
     user = User.find_by(email: params[:password_reset][:email].strip.downcase)
     user.send_password_reset if user
-    flash[:primary] = 'Email sent with password reset instructions.'
+    flash[:primary] = "Email sent with password reset instructions."
     redirect_to root_url
   end
 
-  def edit
-  end
+  def edit; end
 
   def update
     if @user.password_reset_sent_at < 2.hours.ago
-      flash[:alert] = 'Password reset has expired.'
+      flash[:alert] = "Password reset has expired."
       redirect_to new_password_reset_path
     elsif @user.update(user_params)
       log_in @user
-      flash[:success] = 'Password has been reset.'
+      flash[:success] = "Password has been reset."
       redirect_to root_url
     else
-      render 'edit'
+      render "edit"
     end
   end
 
@@ -36,7 +34,7 @@ class PasswordResetsController < ApplicationController
 
   def set_user
     @user = User.find_by!(password_reset_token: params[:id])
-  rescue
+  rescue StandardError
     redirect_to root_url
   end
 end

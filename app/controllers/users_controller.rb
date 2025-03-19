@@ -17,16 +17,16 @@ class UsersController < ApplicationController
       log_in @user
       redirect_to @user
     else
-      render 'new'
+      render "new"
     end
   end
 
   def edit
     @user = User.find(params[:id])
-    @period_end_message = case [@user.stripe_subscription_status.present?, @user.cancel_at_period_end?]
-                          when [true, false] then 'Next billing date:'
-                          when [true, true] then 'Subscription end date:'
-                          else 'Trial end date:' end
+    @period_end_message = case [ @user.stripe_subscription_status.present?, @user.cancel_at_period_end? ]
+                          when [ true, false ] then "Next billing date:"
+                          when [ true, true ] then "Subscription end date:"
+                          else "Trial end date:" end
     @expiration_date = @user.expiration_date.to_date.to_formatted_s(:long)
   end
 
@@ -34,16 +34,16 @@ class UsersController < ApplicationController
     user = User.find(params[:id])
     if user.update(user_params)
       user.update_stripe_customer
-      flash.now[:success] = 'Profile updated.'
+      flash.now[:success] = "Profile updated."
     end
-    render 'edit'
+    render "edit"
   end
 
   def destroy
     user = User.find(params[:id])
     user.delete_stripe_customer
     user.destroy
-    flash[:primary] = 'User deleted succesfully.'
+    flash[:primary] = "User deleted succesfully."
     redirect_to root_url
   end
 
@@ -52,7 +52,7 @@ class UsersController < ApplicationController
     Feed.where(top_site: true).shuffle.each do |f|
       user.subscriptions.find_or_create_by(feed: f)
     end
-    flash[:primary] = 'Ok, done! Happy reading.'
+    flash[:primary] = "Ok, done! Happy reading."
     redirect_to user.next_feed
   end
 

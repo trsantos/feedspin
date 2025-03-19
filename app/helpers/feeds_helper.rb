@@ -11,7 +11,7 @@ module FeedsHelper
     uri = URI.parse url
     "https://icons.duckduckgo.com/ip2/#{uri.host}.ico"
   rescue StandardError
-    image_path 'feed-icon.png'
+    image_path "feed-icon.png"
   end
 
   def show_payment_aside?

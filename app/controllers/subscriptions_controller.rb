@@ -7,7 +7,7 @@ class SubscriptionsController < ApplicationController
   def index
     user = current_user
     if user.subscriptions.empty?
-      flash[:primary] = 'You are not subscribed to any feeds yet.'
+      flash[:primary] = "You are not subscribed to any feeds yet."
       redirect_to user
     end
     @subscriptions = user.subscriptions.includes(:feed).order(updated: :desc, starred: :desc, visited_at: :asc)

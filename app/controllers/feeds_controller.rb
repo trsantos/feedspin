@@ -4,8 +4,8 @@ class FeedsController < ApplicationController
   before_action :logged_in_user
   before_action :set_user
   before_action :check_expiration_date
-  before_action :set_subscription, only: [:show]
-  before_action :unread_feeds, only: [:show]
+  before_action :set_subscription, only: [ :show ]
+  before_action :unread_feeds, only: [ :show ]
 
   def show
     cookies.delete :check_for_updated_subs
@@ -50,6 +50,6 @@ class FeedsController < ApplicationController
     return if @user.subscriptions.exists?(updated: true)
 
     flash.now[:primary] =
-      'You have no updated feeds right now. Check back later!'
+      "You have no updated feeds right now. Check back later!"
   end
 end
