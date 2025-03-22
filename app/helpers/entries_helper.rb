@@ -1,7 +1,7 @@
 module EntriesHelper
   def old?(entry)
     entry.created_at < @subscription.visited_at
-  rescue StandardError
+  rescue
     false
   end
 end

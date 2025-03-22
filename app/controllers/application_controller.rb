@@ -22,17 +22,14 @@ class ApplicationController < ActionController::Base
 
   def logged_in_user
     return if logged_in?
-
     store_location
-    flash[:alert] = "Please log in."
+    flash[:alert] = 'Please log in.'
     redirect_to login_url
   end
 
   def current_user
-    return unless cookies[:auth_token]
-
     @current_user ||=
-      User.find_by(auth_token: cookies[:auth_token])
+      User.find_by(auth_token: cookies[:auth_token]) if cookies[:auth_token]
   end
 
   def logged_in?

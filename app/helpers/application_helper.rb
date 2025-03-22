@@ -1,6 +1,6 @@
 module ApplicationHelper
-  def full_title(page_title = "")
-    base_title = "FeedSpin"
+  def full_title(page_title = '')
+    base_title = 'FeedSpin'
     if page_title.empty?
       base_title
     else
@@ -9,15 +9,15 @@ module ApplicationHelper
   end
 
   def in_feeds_show
-    params[:controller] == "feeds" && params[:action] == "show"
+    params[:controller] == 'feeds' && params[:action] == 'show'
   end
 
   def process_url(url)
     return nil if url.blank?
 
     url = url.strip
-    url = "http://#{url}" unless url.start_with?("http:", "https:")
-    if url.include?("www.youtube.com/@") || url.include?("www.youtube.com/channel")
+    url = "http://#{url}" unless url.start_with?('http:', 'https:')
+    if url.include?('www.youtube.com/@') || url.include?('www.youtube.com/channel')
       get_youtube_feed url
     else
       url
@@ -27,7 +27,7 @@ module ApplicationHelper
   def get_youtube_feed(url)
     body = HTTParty.get(url).body
     doc = Nokogiri::HTML(body)
-    doc.css("link[title='RSS']").first.attributes["href"].value
+    doc.css("link[title='RSS']").first.attributes['href'].value
   rescue StandardError
     url
   end
