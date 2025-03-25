@@ -13,10 +13,10 @@ gem 'ostruct'
 gem 'pg'
 gem 'sass-rails'
 gem 'sdoc', group: :doc
+gem 'solid_queue', '~> 1.1'
 gem 'turbolinks'
 gem 'uglifier'
 
-gem 'browser'
 gem 'feedjira'
 gem 'font-awesome-sass', '~> 5.0.0'
 gem 'foundation-rails', '~> 6.3.0'
