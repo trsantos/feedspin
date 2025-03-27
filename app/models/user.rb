@@ -67,7 +67,7 @@ class User < ApplicationRecord
     return if feeds_to_update.empty?
 
     jobs = feeds_to_update.map { |f| FeedUpdateJob.new(f) }
-    feeds_to_update.update_all(fetched_at: Time.current, fetching: true)
+    feeds_to_update.update_all(fetched_at: Time.current)
     ActiveJob.perform_all_later(jobs)
   end
 
