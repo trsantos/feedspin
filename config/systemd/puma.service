@@ -11,7 +11,9 @@ Group=feedspin
 WorkingDirectory=/home/feedspin/feedspin
 EnvironmentFile=/etc/environment
 
-Environment=SOLID_QUEUE_IN_PUMA=true
+Environment=JOB_CONCURRENCY=10
+Environment=SOLID_QUEUE_IN_PUMA=1
+Environment=WEB_CONCURRENCY=2
 
 ExecStart=/home/feedspin/.rbenv/shims/bundle exec puma
 
