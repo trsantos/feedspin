@@ -106,9 +106,11 @@ class Feed < ApplicationRecord
     image = find_image(fj_entry, description)
     pub_date = find_date(fj_entry.published)
     title = find_title(fj_entry)
+    url = fj_entry.url
 
-    { audio:, description:, feed_id: id, fj_entry_id: fj_entry.id || fj_entry.url,
-      has_text:, image:, pub_date:, title:, url: fj_entry.url }
+    fj_entry_id = fj_entry.id || fj_entry.url || title
+
+    { audio:, description:, feed_id: id, fj_entry_id:, has_text:, image:, pub_date:, title:, url: }
   end
 
   def feedjira_setup
