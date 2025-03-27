@@ -14,6 +14,9 @@ $text-color: #0A0A0A;
     body {
         background: white !important;
     }
+    input::placeholder, textarea::placeholder {
+        color: unset !important;
+    }
     .turbolinks-progress-bar {
         height: 2px;
         background-color: yellow;
