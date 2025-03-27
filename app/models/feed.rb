@@ -107,7 +107,7 @@ class Feed < ApplicationRecord
     pub_date = find_date(fj_entry.published)
     title = find_title(fj_entry)
 
-    { audio:, description:, feed_id: id, fj_entry_id: fj_entry.id,
+    { audio:, description:, feed_id: id, fj_entry_id: fj_entry.id || fj_entry.url,
       has_text:, image:, pub_date:, title:, url: fj_entry.url }
   end
 
