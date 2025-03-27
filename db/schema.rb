@@ -10,9 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_12_16_192225) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_26_170201) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
+  enable_extension "pg_catalog.plpgsql"
 
   create_table "entries", force: :cascade do |t|
     t.string "title"
@@ -25,6 +25,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_16_192225) do
     t.string "image"
     t.string "fj_entry_id"
     t.string "audio"
+    t.boolean "has_text", default: true
     t.index ["feed_id", "fj_entry_id"], name: "index_entries_on_feed_id_and_fj_entry_id", unique: true
     t.index ["feed_id"], name: "index_entries_on_feed_id"
     t.index ["title"], name: "index_entries_on_title"
@@ -41,6 +42,8 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_16_192225) do
     t.boolean "has_only_images"
     t.boolean "fetching", default: true
     t.boolean "top_site"
+    t.datetime "fetched_at"
+    t.datetime "modified_at"
     t.index ["feed_url"], name: "index_feeds_on_feed_url", unique: true
   end
 

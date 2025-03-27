@@ -7,26 +7,36 @@ class FeedsController < ApplicationController
   before_action :set_subscription, only: [:show]
   before_action :unread_feeds, only: [:show]
 
+  after_action :update_feeds, only: [:show]
+
   def show
     cookies.delete :check_for_updated_subs
     @feed = Feed.find(params[:id])
-    @entries = @feed.entries.order(pub_date: :desc).page(params[:page]).per(10) unless @feed.fetching
+    return if @feed.fetching
+
+    @entries = @feed.entries.order(pub_date: :desc).page(params[:page]).per(10)
+    @image_only_feed = @entries.all? { |e| !e.has_text? }
   end
 
   def new
-    return unless params[:feed]
-
-    feed = Feed.find_or_create_by(feed_url: process_url(params[:feed]))
-    redirect_to feed
+    if params[:feed_url].present?
+      feed = find_or_create_feed(params[:feed_url])
+      redirect_to feed
+    else
+      @feed = Feed.new
+    end
   end
 
   def create
-    url = params[:feed][:feed_url]
-    feed = Feed.find_or_create_by(feed_url: process_url(url))
+    feed = find_or_create_feed(params[:feed][:feed_url])
     redirect_to feed
   end
 
   private
+
+  def find_or_create_feed(url)
+    Feed.find_or_create_by(feed_url: process_url(url))
+  end
 
   def set_user
     @user = current_user
@@ -49,7 +59,10 @@ class FeedsController < ApplicationController
     return unless cookies[:check_for_updated_subs]
     return if @user.subscriptions.exists?(updated: true)
 
-    flash.now[:primary] =
-      'You have no updated feeds right now. Check back later!'
+    flash.now[:primary] = 'You have no updated feeds right now. Check back later!'
+  end
+
+  def update_feeds
+    @user.update_feeds
   end
 end

@@ -10,7 +10,7 @@
   <div class="row">
 	<div class="small-12 columns">
 	  <% if entry.image %>
-		<div class="thumb <%= 'small-thumb' unless @feed.has_only_images %>">
+		<div class="thumb <%= 'small-thumb' unless @image_only_feed %>">
 		  <a href="<%= entry.url %>" target="_blank">
 			<%= image_tag entry.image %>
 		  </a>

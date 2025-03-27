@@ -17,11 +17,7 @@ module ApplicationHelper
 
     url = url.strip
     url = "http://#{url}" unless url.start_with?('http:', 'https:')
-    if url.include?('www.youtube.com/@') || url.include?('www.youtube.com/channel')
-      get_youtube_feed url
-    else
-      url
-    end
+    url
   end
 
   def get_youtube_feed(url)

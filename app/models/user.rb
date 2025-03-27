@@ -62,6 +62,15 @@ class User < ApplicationRecord
     Stripe::Customer.update(stripe_customer_id, { email:, name: })
   end
 
+  def update_feeds
+    feeds_to_update = feeds.where(fetched_at: ..1.hour.ago).or(feeds.where(fetched_at: nil))
+    return if feeds_to_update.empty?
+
+    jobs = feeds_to_update.map { |f| FeedUpdateJob.new(f) }
+    feeds_to_update.update_all(fetched_at: Time.current, fetching: true)
+    ActiveJob.perform_all_later(jobs)
+  end
+
   private
 
   # Converts email to all lower-case.

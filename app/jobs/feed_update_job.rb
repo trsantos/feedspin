@@ -3,8 +3,9 @@ class FeedUpdateJob < ApplicationJob
 
   def perform(feed)
     feed.update_feed
-    ActiveRecord::Base.connection.close
-  rescue
+  rescue StandardError
     nil
+  ensure
+    ActiveRecord::Base.connection.close
   end
 end
