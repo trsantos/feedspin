@@ -84,7 +84,9 @@ class SubscriptionsController < ApplicationController
     sub = Subscription.find(params[:last_sub])
     return unless sub.updated?
 
-    sub.update(visited_at: Time.current, updated: false, snoozed_at: nil)
+    visited_at = Time.at(params[:timestamp].to_i)
+    updated = sub.entries.exists?(created_at: visited_at..)
+    sub.update(visited_at:, updated:)
   rescue StandardError
     nil
   end

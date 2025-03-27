@@ -34,7 +34,7 @@
 
   <li class="show-for-medium">
     <%= link_to 'Next feed',
-                next_path(last_sub: @subscription),
+                next_path(last_sub: @subscription, timestamp: Time.current.to_i),
                 class: 'button',
                 accesskey: 'n' %>
   </li>
