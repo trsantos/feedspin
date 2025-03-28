@@ -91,7 +91,8 @@ class Feed < ApplicationRecord
   def mark_subscriptions_as_updated
     return if entries.empty?
 
-    subscriptions.where(updated: false).update_all(updated: true)
+    newest_pub_date = entries.order(pub_date: :desc).first.pub_date
+    subscriptions.where(updated: false, visited_at: ..newest_pub_date).update_all(updated: true)
   end
 
   def upsert_entry(fj_entry)
