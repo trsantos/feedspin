@@ -82,8 +82,6 @@ class SubscriptionsController < ApplicationController
 
   def visit_feed
     sub = Subscription.find(params[:last_sub])
-    return unless sub.updated?
-
     visited_at = Time.at(params[:timestamp].to_i)
     updated = sub.entries.exists?(created_at: visited_at..)
     sub.update(visited_at:, updated:)
