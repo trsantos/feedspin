@@ -29,6 +29,12 @@ class Feed < ApplicationRecord
     end
   end
 
+  def reset_feed
+    entries.delete_all
+    update(modified_at: nil)
+    update_feed
+  end
+
   private
 
   def fetch_and_parse
