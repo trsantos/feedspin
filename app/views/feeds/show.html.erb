@@ -56,4 +56,6 @@
  document.addEventListener('turbolinks:load', () => processImages());
 </script>
 
-<%= link_to 'Next feed', next_path(last_sub: @subscription), class: 'show-for-small-only button expanded', id: 'next' %>
+<%= link_to 'Next feed',
+            next_path(last_sub: @subscription, timestamp: Time.current.to_i),
+            class: 'show-for-small-only button expanded', id: 'next' %>
