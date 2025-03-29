@@ -8,6 +8,7 @@ $fh-height: 55px;
 $fh-hover: #292D36;
 $home-bg-color: #10141F;
 $text-color: #0A0A0A;
+$border-radius: 3px;
 
 /* Small and up */
 @media only screen {
@@ -80,14 +81,14 @@ $text-color: #0A0A0A;
         #screenshot {
             margin-bottom: 50px;
             img {
-                border-radius: 2px;
+                border-radius: $border-radius;
                 box-shadow: 0px 0px 30px black;
                 display: block;
                 margin-left: auto;
                 margin-right: auto;
             }
         }
-        .main-features {
+        #main-features {
             text-align: center;
             background-color: white;
             color: $home-bg-color;
@@ -114,7 +115,7 @@ $text-color: #0A0A0A;
         }
     }
     .radius {
-        border-radius: 2px !important;
+        border-radius: $border-radius !important;
     }
     .callout {
         margin: 0 !important;
@@ -143,7 +144,7 @@ $text-color: #0A0A0A;
         }
         .auth-box {
             background-color: white;
-            border-radius: 2px;
+            border-radius: $border-radius;
             padding: 15px;
             margin: 30px auto;
         }
@@ -210,7 +211,7 @@ $text-color: #0A0A0A;
             align-items: center;
         }
         .small-thumb {
-            border-radius: 2px;
+            border-radius: $border-radius;
             background-color: $img-bg-color;
             img {
                 display: block;
@@ -270,7 +271,7 @@ $text-color: #0A0A0A;
             box-shadow: 0px 0px 0px 1px $img-shadow-color;
         }
         img {
-            border-radius: 2px;
+            border-radius: $border-radius;
         }
     }
     .top-bar {
@@ -417,6 +418,9 @@ $text-color: #0A0A0A;
         #screenshot {
             margin-bottom: 60px;
         }
+        #main-features {
+            border-radius: $border-radius;
+        }
     }
     body {
         background-color: $bg-color !important;
@@ -435,7 +439,7 @@ $text-color: #0A0A0A;
                 max-height: 100px;
                 padding: 3px;
                 background-color: white;
-                border-radius: 2px;
+                border-radius: $border-radius;
             }
         }
         #aside-description, #aside-title, #aside-sub {
@@ -463,7 +467,7 @@ $text-color: #0A0A0A;
     }
     .box {
         background-color: white;
-        border-radius: 2px;
+        border-radius: $border-radius;
     }
     .simple-container .box {
         padding: 15px;
