@@ -8,12 +8,15 @@ $fh-height: 55px;
 $fh-hover: #292D36;
 $home-bg-color: #10141F;
 $text-color: #0A0A0A;
-$border-radius: 3px;
+$border-radius: 2px;
 
 /* Small and up */
 @media only screen {
     body {
         background: white !important;
+    }
+    input {
+        border-radius: $border-radius !important;
     }
     input::placeholder, textarea::placeholder {
         color: unset !important;
@@ -383,6 +386,12 @@ $border-radius: 3px;
         }
         .button {
             border: 0;
+        }
+        #feed-controls {
+            background-color: $fh-color !important;
+            a {
+                border-radius: $border-radius;
+            }
         }
     }
     article {

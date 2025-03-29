@@ -16,7 +16,7 @@
           <% end %>
           <li>
             <%= link_to current_user.name.split.first, '#' %>
-            <ul class="vertical menu">
+            <ul class="vertical menu radius">
               <li><%= link_to "Setup", current_user %></li>
               <li><%#= link_to "Feedback", feedback_path %></li>
               <li><%= link_to "Account", edit_user_path(current_user) %></li>
