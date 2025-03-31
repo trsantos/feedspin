@@ -12,7 +12,7 @@ class Feed < ApplicationRecord
   ENTRIES_PER_FEED = 150
 
   def self.update_all_feeds
-    Feed.find_each do |f|
+    Feed.where(fetched_at: ..1.hour.ago).find_each do |f|
       FeedUpdateJob.perform_later f
     end
   end
