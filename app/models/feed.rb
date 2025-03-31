@@ -13,6 +13,7 @@ class Feed < ApplicationRecord
 
   def self.update_all_feeds
     Feed.where(fetched_at: ..1.hour.ago).find_each do |f|
+      f.update(fetched_at: Time.current)
       FeedUpdateJob.perform_later f
     end
   end
