@@ -34,6 +34,9 @@
          image.onload = () => {
              if (image.width < 100 || image.height < 25)
                  image.parentElement.parentElement.style.display = 'none';
+             if (image.width / image.height < 1.25) {
+                 image.parentElement.parentElement.classList.add('portrait');
+             }
          }
      }
 
