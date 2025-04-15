@@ -11,7 +11,6 @@ Group=feedspin
 WorkingDirectory=/home/feedspin/feedspin
 EnvironmentFile=/etc/environment
 
-Environment=JOB_CONCURRENCY=5
 Environment=SOLID_QUEUE_IN_PUMA=1
 Environment=WEB_CONCURRENCY=2
 
